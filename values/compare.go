@@ -1,7 +1,6 @@
 package values
 
 import (
-	"fmt"
 	"reflect"
 )
 
@@ -17,7 +16,6 @@ func Equal(a, b any) bool { //nolint: gocyclo
 		return a == b
 	}
 	ra, rb := reflect.ValueOf(a), reflect.ValueOf(b)
-	fmt.Println(ra.Kind(), rb.Kind())
 	switch joinKind(ra.Kind(), rb.Kind()) {
 	case reflect.Array, reflect.Slice:
 		if ra.Len() != rb.Len() {
