@@ -39,6 +39,8 @@ var eqTests = []struct {
 	{[]string{"a", "b"}, []string{"a", "c"}, false},
 	{[]any{1.0, 2}, []any{1, 2.0}, true},
 	{eqTestObj, eqTestObj, true},
+	{map[string]any{"a": 1}, map[string]any{"a": 1}, true},
+	{map[string]any{"a": 1}, map[string]any{"b": 1}, false},
 }
 
 func TestEqual(t *testing.T) {

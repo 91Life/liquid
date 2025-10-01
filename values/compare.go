@@ -1,6 +1,7 @@
 package values
 
 import (
+	"fmt"
 	"reflect"
 )
 
@@ -16,6 +17,7 @@ func Equal(a, b any) bool { //nolint: gocyclo
 		return a == b
 	}
 	ra, rb := reflect.ValueOf(a), reflect.ValueOf(b)
+	fmt.Println(ra.Kind(), rb.Kind())
 	switch joinKind(ra.Kind(), rb.Kind()) {
 	case reflect.Array, reflect.Slice:
 		if ra.Len() != rb.Len() {
@@ -40,6 +42,8 @@ func Equal(a, b any) bool { //nolint: gocyclo
 			return ra.IsNil() == rb.IsNil()
 		}
 		return a == b
+	case reflect.Map:
+		return mapsAreEqual(ra.Interface().(map[string]any), rb.Interface().(map[string]any))
 	default:
 		return a == b
 	}
@@ -106,4 +110,29 @@ func isFloatKind(k reflect.Kind) bool {
 	default:
 		return false
 	}
+}
+
+// mapsAreEqual checks if two maps have the same keys and values.
+func mapsAreEqual(a, b map[string]any) bool {
+	// 1. Check if they have the same number of keys.
+	if len(a) != len(b) {
+		return false
+	}
+
+	// 2. Check if all keys and values from 'a' exist and are equal in 'b'.
+	for key, valA := range a {
+		valB, ok := b[key]
+		// 2a. Does the key from 'a' even exist in 'b'?
+		if !ok {
+			return false
+		}
+		// 2b. Are the values for that key equal?
+		// (This uses reflect.DeepEqual to handle nested objects)
+		if !reflect.DeepEqual(valA, valB) {
+			return false
+		}
+	}
+
+	// If all checks pass, the maps are equal.
+	return true
 }
